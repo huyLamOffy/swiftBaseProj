@@ -67,9 +67,12 @@ class APIRequest {
 //MARK: - private methods
 extension APIRequest {
     private func performEmptyObjectRequest(with request: DataRequest, completion: @escaping (APIError?) -> Void) {
-        request.validate().responseJSON(queue: queue) {[weak self] result in
+        request.validate().responseJSON(queue: queue) {[weak self]result in
             //debugPrint(result)
             DispatchQueue.main.async {
+                if let error = result.result.error {
+                    completion(APIError.custom(message: error.localizedDescription))
+                }
                 if let error = self?.responseError(result) {
                     completion(error)
                     return
